@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="robots" content="noindex" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Session — SafeHeight Instructor</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;min-height:100vh}
+    nav{background:#0f172a;padding:0 32px;display:flex;align-items:center;height:58px;gap:16px;border-bottom:1px solid #1e293b}
+    .nav-logo{color:#f59e0b;font-weight:800;font-size:1rem;text-decoration:none;letter-spacing:0.03em}
+    .nav-links{display:flex;gap:2px;margin-left:24px}
+    .nav-link{color:#94a3b8;font-size:0.82rem;padding:6px 12px;border-radius:6px;text-decoration:none;transition:all 0.2s}
+    .nav-link:hover{color:#e2e8f0;background:rgba(255,255,255,0.06)}
+    .nav-link.active{color:#fff;background:#2563eb}
+    .nav-right{margin-left:auto}
+    .nav-logout{color:#94a3b8;font-size:0.8rem;background:none;border:none;cursor:pointer;padding:6px 10px;border-radius:6px;transition:all 0.2s}
+    .nav-logout:hover{color:#f87171;background:rgba(248,113,113,0.08)}
+    .page{max-width:740px;margin:36px auto;padding:0 24px}
+    .page-header{margin-bottom:24px}
+    .page-header h1{font-size:1.5rem;font-weight:800;color:#0f172a}
+    .page-header p{color:#64748b;font-size:0.85rem;margin-top:5px}
+    .card{background:white;border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,0.05),0 4px 16px rgba(0,0,0,0.04);border:1px solid #e2e8f0;padding:28px;margin-bottom:20px}
+    .card-title{font-size:0.78rem;font-weight:700;color:#0f172a;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:8px}
+    .card-title::before{content:'';display:inline-block;width:3px;height:13px;background:#2563eb;border-radius:2px;flex-shrink:0}
+    label{display:block;font-size:0.8rem;font-weight:600;color:#374151;margin-bottom:6px}
+    input[type=date],input[type=text]{width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;transition:border-color 0.2s,box-shadow 0.2s;background:#fff;color:#1e293b;margin-bottom:18px}
+    input[type=date]:focus,input[type=text]:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
+    .scopes-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+    .scope-check{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:8px;cursor:pointer;transition:all 0.15s}
+    .scope-check:hover{border-color:#2563eb}
+    .scope-check input[type=checkbox]{width:16px;height:16px;cursor:pointer;margin:0;margin-top:2px;flex-shrink:0;accent-color:#2563eb}
+    .scope-check span{font-size:0.83rem;color:#374151;line-height:1.35}
+    .scope-check:has(input:checked){border-color:#2563eb;background:#eff6ff}
+    .scope-check:has(input:checked) span{color:#1e40af;font-weight:600}
+    .scope-actions{display:flex;gap:10px;margin-bottom:18px}
+    .btn-link{background:none;border:none;color:#2563eb;font-size:0.78rem;cursor:pointer;font-weight:600;padding:0}
+    .btn-link:hover{color:#1d4ed8;text-decoration:underline}
+    textarea{width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.88rem;font-family:inherit;outline:none;resize:vertical;min-height:100px;transition:border-color 0.2s,box-shadow 0.2s;background:#fff;color:#1e293b}
+    textarea:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
+    .hint{font-size:0.75rem;color:#94a3b8;margin-top:6px}
+    .email-counter{font-size:0.75rem;font-weight:700;color:#64748b}
+    .email-counter.over{color:#ef4444}
+    .email-label-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+    .hint-spaced{font-size:0.75rem;color:#94a3b8;margin-top:10px}
+    .upload-zone-sub{font-size:0.72rem;margin-top:4px;color:#94a3b8}
+    .submit-row{margin-top:20px}
+    /* Tabs */
+    .tabs{display:flex;gap:0;margin-bottom:18px;border:1.5px solid #e2e8f0;border-radius:8px;overflow:hidden}
+    .tab-btn{flex:1;padding:9px;font-size:0.82rem;font-weight:600;cursor:pointer;border:none;background:#f8fafc;color:#64748b;transition:all 0.15s}
+    .tab-btn.active{background:#2563eb;color:#fff}
+    .tab-panel{display:none}
+    .tab-panel.active{display:block}
+    .upload-zone{border:2px dashed #e2e8f0;border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;position:relative;background:#fafafa}
+    .upload-zone:hover{border-color:#2563eb;background:#eff6ff}
+    .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .upload-zone p{color:#94a3b8;font-size:0.85rem}
+    .upload-zone .filename{color:#0f172a;font-weight:600;font-size:0.88rem;margin-top:8px}
+    .csv-preview{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;margin-top:10px;font-size:0.78rem;color:#374151;font-family:monospace;max-height:120px;overflow-y:auto;display:none}
+    /* Buttons */
+    .btn-primary{padding:12px 32px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-weight:600;font-size:0.9rem;cursor:pointer;transition:background 0.2s}
+    .btn-primary:hover{background:#1d4ed8}
+    .btn-primary:disabled{background:#93c5fd;cursor:not-allowed}
+    .card-title-scopes{margin-top:4px}
+    .scopes-intro{font-size:0.82rem;color:#64748b;margin-bottom:12px}
+    .result{margin-top:16px;padding:14px 16px;border-radius:8px;font-size:0.85rem;display:none}
+    .result.success{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0}
+    .result.error{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-logo">SafeHeight</a>
+    <div class="nav-links">
+      <a href="/instructor/dashboard" class="nav-link">Dashboard</a>
+      <a href="/instructor/queue" class="nav-link">Review Queue</a>
+      <a href="/instructor/database" class="nav-link">Certificates</a>
+      <a href="/instructor/settings" class="nav-link">Settings</a>
+    </div>
+    <div class="nav-right"><button type="button" class="nav-logout" onclick="logout()">Sign Out</button></div>
+  </nav>
+
+  <div class="page">
+    <div class="page-header">
+      <h1>Create Training Session</h1>
+      <p>Set the training date, select certified scopes, and invite students by email or CSV upload.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Session Details</div>
+      <label for="training-date">Training Date</label>
+      <input type="date" id="training-date" title="Training date" />
+
+      <div class="card-title card-title-scopes">Authorized Scopes</div>
+      <p class="scopes-intro">Select all modules covered in this training session. These will appear on issued certificates.</p>
+      <div class="scopes-grid" id="scopes-grid">
+        <label class="scope-check">
+          <input type="checkbox" value="Ladders (Climbing &amp; Anchoring)" checked />
+          <span>MODULE 01 — Ladders (Climbing &amp; Anchoring)</span>
+        </label>
+        <label class="scope-check">
+          <input type="checkbox" value="Mobile Elevating Work Platforms (MEWP)" />
+          <span>MODULE 02 — Mobile Elevating Work Platforms (MEWP)</span>
+        </label>
+        <label class="scope-check">
+          <input type="checkbox" value="Crane Man-Baskets" />
+          <span>MODULE 03 — Crane Man-Baskets</span>
+        </label>
+        <label class="scope-check">
+          <input type="checkbox" value="Scaffolding (Access &amp; Work Only)" />
+          <span>MODULE 04 — Scaffolding (Access &amp; Work Only)</span>
+        </label>
+        <label class="scope-check">
+          <input type="checkbox" value="Flat Roofs (with Guardrails/Lifelines)" />
+          <span>MODULE 05 — Flat Roofs (with Guardrails/Lifelines)</span>
+        </label>
+        <label class="scope-check">
+          <input type="checkbox" value="Sloped / Steep Roofs" />
+          <span>MODULE 06 — Sloped / Steep Roofs</span>
+        </label>
+        <label class="scope-check">
+          <input type="checkbox" value="Fragile Roofs (Asbestos/Insulated Panels)" />
+          <span>MODULE 07 — Fragile Roofs (Asbestos/Insulated Panels)</span>
+        </label>
+        <label class="scope-check">
+          <input type="checkbox" value="Steel Constructions &amp; Antennas" />
+          <span>MODULE 08 — Steel Constructions &amp; Antennas</span>
+        </label>
+        <label class="scope-check">
+          <input type="checkbox" value="Confined Space Access" />
+          <span>MODULE 09 — Confined Space Access</span>
+        </label>
+      </div>
+      <div class="scope-actions">
+        <button type="button" class="btn-link" onclick="selectAllScopes()">Select all</button>
+        <button type="button" class="btn-link" onclick="clearAllScopes()">Clear all</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Student Invitations</div>
+      <div class="tabs">
+        <button type="button" class="tab-btn active" onclick="switchTab('manual')">Manual Entry</button>
+        <button type="button" class="tab-btn" onclick="switchTab('csv')">Upload CSV / Excel</button>
+      </div>
+
+      <div id="tab-manual" class="tab-panel active">
+        <div class="email-label-row">
+          <label for="emails">Student Email Addresses</label>
+          <span id="email-counter" class="email-counter">0 / 10</span>
+        </div>
+        <textarea id="emails" placeholder="student1@example.com&#10;student2@example.com&#10;student3@example.com" oninput="updateCounter()"></textarea>
+        <p class="hint">One email address per line. Maximum 10 participants per session.</p>
+      </div>
+
+      <div id="tab-csv" class="tab-panel">
+        <div class="upload-zone" id="csv-zone">
+          <input type="file" id="csv-file" accept=".csv,.xlsx,.xls,text/csv" onchange="onCsvSelect()" />
+          <p>📋 Click or drag to upload your student roster</p>
+          <p class="upload-zone-sub">CSV or Excel file &nbsp;·&nbsp; Must have an <strong>email</strong> column</p>
+          <div class="filename" id="csv-filename"></div>
+        </div>
+        <div class="csv-preview" id="csv-preview"></div>
+        <p class="hint-spaced">The file must contain an <code>email</code> column header. Additional columns are ignored.</p>
+      </div>
+
+      <div class="submit-row">
+        <button type="button" class="btn-primary" onclick="createSession()">Create Session &amp; Send Invitations</button>
+      </div>
+      <div id="result" class="result"></div>
+    </div>
+  </div>
+
+  <script>
+    (async () => {
+      const r = await fetch('/instructor/api/me');
+      if (!r.ok) window.location.href = '/instructor/login';
+    })();
+
+    document.getElementById('training-date').value = new Date().toISOString().split('T')[0];
+
+    function updateCounter() {
+      const emails = document.getElementById('emails').value.split('\n').map(e => e.trim()).filter(Boolean);
+      const counter = document.getElementById('email-counter');
+      counter.textContent = emails.length + ' / 10';
+      counter.classList.toggle('over', emails.length > 10);
+    }
+
+    function selectAllScopes() {
+      document.querySelectorAll('#scopes-grid input[type=checkbox]').forEach(c => c.checked = true);
+    }
+    function clearAllScopes() {
+      document.querySelectorAll('#scopes-grid input[type=checkbox]').forEach(c => c.checked = false);
+    }
+
+    function switchTab(name) {
+      document.querySelectorAll('.tab-btn').forEach((b, i) => {
+        b.classList.toggle('active', (i === 0 && name === 'manual') || (i === 1 && name === 'csv'));
+      });
+      document.getElementById('tab-manual').classList.toggle('active', name === 'manual');
+      document.getElementById('tab-csv').classList.toggle('active', name === 'csv');
+    }
+
+    function onCsvSelect() {
+      const file = document.getElementById('csv-file').files[0];
+      if (!file) return;
+      document.getElementById('csv-filename').textContent = file.name;
+      document.getElementById('csv-zone').style.borderColor = '#10b981';
+
+      if (!file.name.endsWith('.csv')) {
+        document.getElementById('csv-preview').style.display = 'block';
+        document.getElementById('csv-preview').textContent = 'Excel file selected — emails will be extracted on submit.';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = e => {
+        const lines = e.target.result.split('\n').slice(0, 6);
+        const preview = document.getElementById('csv-preview');
+        preview.textContent = lines.join('\n');
+        preview.style.display = 'block';
+      };
+      reader.readAsText(file);
+    }
+
+    function getEmailsFromCsv(text) {
+      const lines = text.trim().split('\n');
+      if (!lines.length) return [];
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/['"]/g, ''));
+      const emailIdx = headers.findIndex(h => h === 'email' || h === 'e-mail');
+      if (emailIdx === -1) return null;
+      return lines.slice(1)
+        .map(l => l.split(',')[emailIdx]?.trim().replace(/['"]/g, ''))
+        .filter(Boolean);
+    }
+
+    async function createSession() {
+      const btn = document.querySelector('.submit-row .btn-primary');
+      try {
+        const training_date = document.getElementById('training-date').value;
+        const scopes = [...document.querySelectorAll('#scopes-grid input:checked')].map(i => i.value);
+
+        if (!training_date) return show('Please select a training date.', 'error');
+        if (!scopes.length) return show('Please select at least one scope.', 'error');
+
+        let emails = [];
+        const activeTab = document.getElementById('tab-manual').classList.contains('active') ? 'manual' : 'csv';
+
+        if (activeTab === 'manual') {
+          emails = document.getElementById('emails').value.split('\n').map(e => e.trim()).filter(Boolean);
+          if (!emails.length) return show('Please enter at least one student email address.', 'error');
+        } else {
+          const file = document.getElementById('csv-file').files[0];
+          if (!file) return show('Please upload a CSV or Excel file.', 'error');
+          if (file.name.endsWith('.csv')) {
+            const text = await file.text();
+            const parsed = getEmailsFromCsv(text);
+            if (parsed === null) return show('CSV must contain an "email" column header.', 'error');
+            emails = parsed;
+            if (!emails.length) return show('No valid email addresses found in the file.', 'error');
+          } else {
+            return show('Excel files are not yet supported. Please export as CSV first.', 'error');
+          }
+        }
+
+        btn.textContent = 'Creating...';
+        btn.disabled = true;
+
+        const res = await fetch('/instructor/api/sessions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ training_date, scopes, student_emails: emails }),
+        });
+        const d = await res.json();
+        show(d.message || d.detail, res.ok ? 'success' : 'error');
+
+        if (res.ok) {
+          document.getElementById('emails').value = '';
+          document.querySelectorAll('#scopes-grid input').forEach(c => c.checked = false);
+          document.querySelector('#scopes-grid input').checked = true;
+          updateCounter();
+        }
+      } catch (err) {
+        show('Unexpected error: ' + err.message, 'error');
+      } finally {
+        btn.textContent = 'Create Session & Send Invitations';
+        btn.disabled = false;
+      }
+    }
+
+    function show(msg, type) {
+      const el = document.getElementById('result');
+      if (!el) { alert(msg); return; }
+      el.textContent = msg;
+      el.className = 'result ' + type;
+      el.style.display = 'block';
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    async function logout() {
+      await fetch('/instructor/logout', { method: 'POST' });
+      window.location.href = '/instructor/login';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="robots" content="noindex" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — SafeHeight Instructor</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;min-height:100vh}
+    nav{background:#0f172a;padding:0 32px;display:flex;align-items:center;height:58px;gap:16px;border-bottom:1px solid #1e293b}
+    .nav-logo{color:#f59e0b;font-weight:800;font-size:1rem;text-decoration:none;letter-spacing:0.03em}
+    .nav-links{display:flex;gap:2px;margin-left:24px}
+    .nav-link{color:#94a3b8;font-size:0.82rem;padding:6px 12px;border-radius:6px;text-decoration:none;transition:all 0.2s}
+    .nav-link:hover{color:#e2e8f0;background:rgba(255,255,255,0.06)}
+    .nav-link.active{color:#fff;background:#2563eb}
+    .nav-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+    .nav-name{color:#64748b;font-size:0.8rem}
+    .nav-logout{color:#94a3b8;font-size:0.8rem;background:none;border:none;cursor:pointer;padding:6px 10px;border-radius:6px;transition:all 0.2s}
+    .nav-logout:hover{color:#f87171;background:rgba(248,113,113,0.08)}
+    .page{max-width:1100px;margin:36px auto;padding:0 24px}
+    .page-header{margin-bottom:28px}
+    .page-header h1{font-size:1.5rem;font-weight:800;color:#0f172a}
+    .page-header p{color:#64748b;font-size:0.85rem;margin-top:5px}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+    .stat-card{background:white;border-radius:14px;padding:22px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.05),0 4px 16px rgba(0,0,0,0.04);border:1px solid #e2e8f0;position:relative;overflow:hidden}
+    .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+    .stat-card.gold::before{background:#f59e0b}
+    .stat-card.green::before{background:#10b981}
+    .stat-card.blue::before{background:#2563eb}
+    .stat-card.red::before{background:#ef4444}
+    .stat-label{font-size:0.72rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px}
+    .stat-value{font-size:2.2rem;font-weight:800;color:#0f172a;line-height:1}
+    .stat-value.gold{color:#f59e0b}
+    .stat-value.green{color:#10b981}
+    .stat-value.red{color:#ef4444}
+    .actions{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .action-card{background:white;border-radius:14px;padding:26px;box-shadow:0 1px 3px rgba(0,0,0,0.05),0 4px 16px rgba(0,0,0,0.04);border:1.5px solid #e2e8f0;text-decoration:none;display:flex;flex-direction:column;gap:12px;transition:all 0.2s}
+    .action-card:hover{border-color:#2563eb;transform:translateY(-2px);box-shadow:0 4px 20px rgba(37,99,235,0.1)}
+    .action-icon{font-size:1.8rem;line-height:1}
+    .action-card h3{font-size:0.95rem;font-weight:700;color:#0f172a}
+    .action-card p{font-size:0.8rem;color:#64748b;line-height:1.6}
+    .action-card .arrow{color:#2563eb;font-size:0.82rem;font-weight:700;margin-top:auto}
+    @media(max-width:768px){.stats{grid-template-columns:1fr 1fr}.actions{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-logo">SafeHeight</a>
+    <div class="nav-links">
+      <a href="/instructor/dashboard" class="nav-link active">Dashboard</a>
+      <a href="/instructor/queue" class="nav-link">Review Queue</a>
+      <a href="/instructor/database" class="nav-link">Certificates</a>
+      <a href="/instructor/settings" class="nav-link">Settings</a>
+    </div>
+    <div class="nav-right">
+      <span class="nav-name" id="nav-name"></span>
+      <button type="button" class="nav-logout" onclick="logout()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="page">
+    <div class="page-header">
+      <h1>Dashboard</h1>
+      <p>Overview of training sessions and certificate status</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card gold"><div class="stat-label">Pending Review</div><div class="stat-value gold" id="s-pending">—</div></div>
+      <div class="stat-card green"><div class="stat-label">Active Certificates</div><div class="stat-value green" id="s-issued">—</div></div>
+      <div class="stat-card blue"><div class="stat-label">Total Students</div><div class="stat-value" id="s-total">—</div></div>
+      <div class="stat-card red"><div class="stat-label">Revoked</div><div class="stat-value red" id="s-revoked">—</div></div>
+    </div>
+
+    <div class="actions">
+      <a href="/instructor/sessions/new" class="action-card">
+        <div class="action-icon">📅</div>
+        <h3>Create Training Session</h3>
+        <p>Schedule a new session, define authorized scopes, and send invitations to students.</p>
+        <span class="arrow">Start →</span>
+      </a>
+      <a href="/instructor/queue" class="action-card">
+        <div class="action-icon">👁️</div>
+        <h3>Review &amp; Issue Queue</h3>
+        <p>Review submitted student profiles side-by-side with their uploaded photo IDs and approve with one click.</p>
+        <span class="arrow">Open queue →</span>
+      </a>
+      <a href="/instructor/database" class="action-card">
+        <div class="action-icon">🗄️</div>
+        <h3>Master Certificate Database</h3>
+        <p>Search, filter, view, and revoke active certificates. Full audit trail available.</p>
+        <span class="arrow">View database →</span>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    (async () => {
+      const [me, stats] = await Promise.all([
+        fetch('/instructor/api/me').then(r => r.json()),
+        fetch('/instructor/api/stats').then(r => r.json()),
+      ]).catch(() => { window.location.href = '/instructor/login'; return [null, null]; });
+      if (!me || !stats) return;
+      document.getElementById('nav-name').textContent = me.full_name || me.email;
+      document.getElementById('s-pending').textContent = stats.pending;
+      document.getElementById('s-issued').textContent = stats.issued;
+      document.getElementById('s-total').textContent = stats.total_students;
+      document.getElementById('s-revoked').textContent = stats.revoked;
+    })();
+    async function logout() {
+      await fetch('/instructor/logout', {method:'POST'});
+      window.location.href = '/instructor/login';
+    }
+  </script>
+</body>
+</html>

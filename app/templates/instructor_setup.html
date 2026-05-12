@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="robots" content="noindex" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>First-Time Setup — SafeHeight</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f172a;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .card{background:#1e293b;border:1px solid #1e3a5f;border-radius:16px;width:100%;max-width:460px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.4)}
+    .gold-line{height:3px;background:linear-gradient(90deg,#2563eb,#f59e0b);border-radius:0 0 3px 3px}
+    .card-top{background:#0f172a;padding:28px 32px 22px;text-align:center;border-bottom:1px solid #1e3a5f}
+    .logo{color:#f59e0b;font-size:1.15rem;font-weight:800;letter-spacing:0.04em;margin-bottom:8px}
+    .card-top h1{color:#f1f5f9;font-size:1.2rem;font-weight:700}
+    .card-top p{color:#64748b;font-size:0.8rem;margin-top:4px}
+    .card-body{padding:28px 32px}
+    label{display:block;font-size:0.75rem;font-weight:600;color:#94a3b8;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.07em}
+    input{width:100%;padding:10px 14px;background:#0f172a;border:1.5px solid #1e3a5f;border-radius:8px;color:#e2e8f0;font-size:0.9rem;outline:none;transition:border-color 0.2s,box-shadow 0.2s;margin-bottom:14px}
+    input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,0.15)}
+    .btn{width:100%;padding:12px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-weight:700;font-size:0.95rem;cursor:pointer;transition:background 0.2s;margin-top:4px}
+    .btn:hover{background:#1d4ed8}
+    .msg{margin-top:14px;padding:12px 14px;border-radius:8px;font-size:0.83rem;display:none}
+    .msg.success{background:rgba(5,150,105,0.12);color:#34d399;border:1px solid rgba(5,150,105,0.25)}
+    .msg.error{background:rgba(220,38,38,0.12);color:#f87171;border:1px solid rgba(220,38,38,0.25)}
+    .totp-box{background:#0f172a;border:1px solid #1e3a5f;border-radius:12px;padding:20px;margin-top:20px;display:none}
+    .totp-box h3{color:#f59e0b;font-size:0.9rem;font-weight:700;margin-bottom:8px}
+    .totp-secret{font-family:monospace;font-size:0.88rem;color:#e2e8f0;word-break:break-all;background:#1e293b;padding:10px 12px;border-radius:8px;border:1px solid #1e3a5f;margin-bottom:12px;letter-spacing:0.04em}
+    #qr-img{width:180px;height:180px;display:block;margin:10px auto;border-radius:8px;background:#fff;padding:6px}
+    .qr-container{text-align:center}
+    .totp-hint{font-size:0.78rem;color:#94a3b8;margin-bottom:12px;line-height:1.5}
+    .totp-key-label{font-size:0.72rem;color:#64748b;margin-bottom:6px}
+    .totp-login-link{display:block;text-align:center;margin-top:14px;color:#2563eb;font-size:0.85rem;font-weight:600;text-decoration:none}
+    .totp-login-link:hover{color:#60a5fa}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="gold-line"></div>
+    <div class="card-top">
+      <div class="logo">SafeHeight</div>
+      <h1>Instructor Account Setup</h1>
+      <p>This page is only available once, before any account exists.</p>
+    </div>
+    <div class="card-body">
+      <label for="s-name">Full Name</label>
+      <input type="text" id="s-name" placeholder="Your full name" title="Full name" />
+      <label for="s-license">License / Certification Number</label>
+      <input type="text" id="s-license" placeholder="CERT-XXXX-XXXX" title="License number" />
+      <label for="s-email">Email Address</label>
+      <input type="email" id="s-email" placeholder="you@example.com" title="Email address" />
+      <label for="s-pass">Password</label>
+      <input type="password" id="s-pass" placeholder="Min 8 characters" title="Password" />
+      <button type="button" class="btn" onclick="setup()">Create Account</button>
+      <div id="setup-msg" class="msg"></div>
+      <div class="totp-box" id="totp-box">
+        <h3>🔐 Save Your MFA Secret</h3>
+        <p class="totp-hint">Scan this QR code with Google Authenticator or Authy. You will need it every login.</p>
+        <div id="qr-container" class="qr-container"></div>
+        <p class="totp-key-label">Manual entry key:</p>
+        <div class="totp-secret" id="totp-secret"></div>
+        <a href="/instructor/login" class="totp-login-link">Continue to Login →</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script>
+    async function setup(){
+      const full_name=document.getElementById('s-name').value.trim();
+      const license_no=document.getElementById('s-license').value.trim();
+      const email=document.getElementById('s-email').value.trim();
+      const password=document.getElementById('s-pass').value;
+      const msgEl=document.getElementById('setup-msg');
+      if(!full_name||!email||!password)return show('Please fill in all fields.','error');
+      if(password.length<8)return show('Password must be at least 8 characters.','error');
+      const res=await fetch('/instructor/api/setup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({full_name,license_no,email,password})});
+      const d=await res.json();
+      if(res.ok){
+        show(d.message,'success');
+        document.getElementById('totp-secret').textContent=d.totp_secret;
+        new QRCode(document.getElementById('qr-container'),{
+          text:d.totp_uri,
+          width:180,height:180,
+          colorDark:'#0f172a',colorLight:'#ffffff',
+          correctLevel:QRCode.CorrectLevel.M
+        });
+        document.getElementById('totp-box').style.display='block';
+      } else {
+        show(d.detail||'Setup failed.','error');
+      }
+    }
+    function show(msg,type){const el=document.getElementById('setup-msg');el.textContent=msg;el.className='msg '+type;el.style.display='block';}
+  </script>
+</body>
+</html>

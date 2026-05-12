@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="robots" content="noindex" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Portal — SafeHeight</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;min-height:100vh;display:flex;flex-direction:column}
+    /* NAV */
+    nav{background:#1a2744;padding:0 32px;display:flex;align-items:center;height:56px;gap:16px}
+    .nav-logo{color:#c9a84c;font-weight:800;font-size:1rem;text-decoration:none}
+    .nav-title{color:#94a3b8;font-size:0.83rem}
+    .nav-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+    .nav-email{color:#64748b;font-size:0.8rem}
+    .nav-logout{color:#94a3b8;font-size:0.8rem;cursor:pointer;background:none;border:none}
+    .nav-logout:hover{color:#f87171}
+    /* WELCOME SCREEN */
+    .welcome-screen{display:flex;flex:1;align-items:center;justify-content:center;padding:40px 24px}
+    .welcome-card{background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.1);padding:48px 40px;max-width:560px;width:100%;text-align:center}
+    .welcome-badge{display:inline-block;background:#f0f4f8;border:1px solid #d1d5db;border-radius:20px;font-size:0.75rem;font-weight:700;color:#64748b;letter-spacing:0.06em;text-transform:uppercase;padding:4px 14px;margin-bottom:20px}
+    .welcome-heading{font-size:1.5rem;font-weight:800;color:#1a2744;line-height:1.3;margin-bottom:12px}
+    .welcome-name{color:#c9a84c}
+    .welcome-sub{font-size:0.88rem;color:#64748b;line-height:1.6;margin-bottom:28px}
+    .welcome-steps{text-align:left;background:#f8fafc;border-radius:10px;padding:18px 20px;margin-bottom:28px}
+    .welcome-step{display:flex;align-items:flex-start;gap:12px;padding:8px 0;border-bottom:1px solid #e5e7eb}
+    .welcome-step:last-child{border-bottom:none}
+    .ws-num{width:26px;height:26px;background:#1a2744;color:#c9a84c;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:800;flex-shrink:0;margin-top:1px}
+    .ws-text strong{display:block;font-size:0.85rem;color:#1a2744;font-weight:700}
+    .ws-text span{font-size:0.78rem;color:#94a3b8}
+    /* LAYOUT */
+    .layout{display:none;flex:1;max-width:1020px;margin:32px auto;gap:24px;padding:0 24px;width:100%}
+    .layout.visible{display:flex}
+    /* STEPS SIDEBAR */
+    .sidebar{width:220px;flex-shrink:0}
+    .progress-label{font-size:0.72rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px}
+    .step-list{list-style:none}
+    .step-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;cursor:pointer;margin-bottom:4px;transition:background 0.15s}
+    .step-item.active{background:#1a2744}
+    .step-item.done{cursor:pointer}
+    .step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;flex-shrink:0}
+    .step-item.active .step-num{background:#c9a84c;color:#0f172a}
+    .step-item.done .step-num{background:#059669;color:#fff}
+    .step-item.pending .step-num{background:#e2e8f0;color:#94a3b8}
+    .step-item.active .step-label{color:#fff}
+    .step-item.done .step-label{color:#059669}
+    .step-item.pending .step-label{color:#94a3b8}
+    .step-label{font-size:0.85rem;font-weight:600}
+    .step-item.done .step-num::after{content:'✓'}
+    /* MAIN CONTENT */
+    .main{flex:1;min-width:0}
+    .panel{display:none;background:white;border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,0.08);padding:32px;animation:fadeIn 0.2s}
+    .panel.active{display:block}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+    .panel-title{font-size:1.1rem;font-weight:700;color:#1a2744;margin-bottom:4px}
+    .panel-sub{font-size:0.83rem;color:#64748b;margin-bottom:24px}
+    /* FORM */
+    .field{margin-bottom:16px}
+    .field label{display:block;font-size:0.8rem;font-weight:600;color:#374151;margin-bottom:5px}
+    .field label .req{color:#dc2626;margin-left:2px}
+    .field label .opt{color:#94a3b8;font-weight:400;margin-left:4px;font-size:0.75rem}
+    input[type=text]{width:100%;padding:10px 13px;border:1.5px solid #d1d5db;border-radius:8px;font-size:0.9rem;outline:none;transition:border-color 0.2s;background:#fafafa}
+    input[type=text]:focus{border-color:#1a2744}
+    input[type=text].invalid{border-color:#dc2626;background:#fff5f5}
+    .field-hint{font-size:0.72rem;color:#94a3b8;margin-top:4px}
+    .field-error{font-size:0.72rem;color:#dc2626;margin-top:4px;display:none}
+    .row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .btn-primary{padding:11px 28px;background:#1a2744;color:#fff;border:none;border-radius:8px;font-weight:600;font-size:0.9rem;cursor:pointer;transition:background 0.2s}
+    .btn-primary:hover{background:#0f1a30}
+    .btn-gold{background:#c9a84c;color:#0f172a}
+    .btn-gold:hover{background:#b8973d}
+    /* Upload */
+    .upload-zone{border:2px dashed #d1d5db;border-radius:10px;padding:28px;text-align:center;cursor:pointer;transition:border-color 0.2s;margin-bottom:8px;position:relative;background:#fafafa}
+    .upload-zone:hover{border-color:#c9a84c;background:#fffdf5}
+    .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .upload-icon{font-size:1.8rem;margin-bottom:8px}
+    .upload-zone p{color:#94a3b8;font-size:0.85rem}
+    .upload-zone .filename{color:#1a2744;font-weight:600;font-size:0.88rem;margin-top:8px}
+    .upload-zone.uploaded{border-color:#059669;background:#f0fdf4}
+    .upload-zone.uploaded .upload-icon::after{content:' ✓';font-size:0.9rem;color:#059669}
+    .upload-section{margin-bottom:24px}
+    .upload-label{font-size:0.8rem;font-weight:600;color:#374151;margin-bottom:8px;display:block}
+    /* Health declaration */
+    .declaration-box{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:20px;font-size:0.82rem;color:#78350f;line-height:1.75;margin-bottom:20px;max-height:320px;overflow-y:auto}
+    .declaration-box h4{font-size:0.88rem;font-weight:700;color:#92400e;margin-bottom:10px}
+    .declaration-box p{margin-bottom:8px}
+    .declaration-box ul{padding-left:20px}
+    .declaration-box ul li{margin-bottom:4px}
+    .checkbox-row{display:flex;align-items:flex-start;gap:10px;background:#f8fafc;border:1.5px solid #d1d5db;border-radius:8px;padding:12px 14px;margin-bottom:20px;cursor:pointer;user-select:none}
+    .checkbox-row input[type=checkbox]{width:18px;height:18px;cursor:pointer;flex-shrink:0;margin-top:2px;accent-color:#1a2744}
+    .checkbox-row span{font-size:0.83rem;color:#374151;line-height:1.5}
+    .checkbox-row:has(input:checked){border-color:#059669;background:#f0fdf4}
+    /* Signature */
+    #sig-canvas{border:1.5px solid #d1d5db;border-radius:10px;cursor:crosshair;touch-action:none;width:100%;background:#fff;display:block}
+    .sig-label{font-size:0.8rem;font-weight:600;color:#374151;margin-bottom:8px}
+    .sig-actions{display:flex;gap:10px;margin-top:10px}
+    .btn-sm{padding:8px 18px;border-radius:7px;font-size:0.82rem;font-weight:600;cursor:pointer;border:1.5px solid #d1d5db;background:#f9fafb;color:#374151;transition:all 0.2s}
+    .btn-sm:hover{border-color:#1a2744;background:#f0f4f8}
+    /* Certificates */
+    .cert-item{border:1px solid #e5e7eb;border-radius:10px;padding:18px 20px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+    .cert-serial{font-weight:700;font-size:0.95rem;color:#1a2744}
+    .cert-meta{font-size:0.8rem;color:#64748b;margin-top:3px}
+    .cert-scopes{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+    .cert-scope-tag{font-size:0.7rem;background:#e0e7ff;color:#3730a3;border-radius:4px;padding:2px 8px;font-weight:500}
+    .cert-badge{font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase}
+    .badge-active{background:#d1fae5;color:#059669}
+    .badge-expired{background:#fef3c7;color:#d97706}
+    .badge-revoked{background:#fee2e2;color:#dc2626}
+    .btn-download{padding:8px 16px;background:#1a2744;color:#fff;border:none;border-radius:7px;font-size:0.82rem;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
+    /* Status card */
+    .status-card{border-radius:10px;padding:16px 18px;margin-bottom:20px;font-size:0.85rem;font-weight:600}
+    .status-pending{background:#fef3c7;color:#92400e;border:1px solid #fde68a}
+    .status-approved{background:#d1fae5;color:#065f46;border:1px solid #a7f3d0}
+    .status-rejected{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
+    /* Toast */
+    .toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:10px;font-size:0.85rem;font-weight:600;display:none;z-index:100;max-width:340px}
+    .toast.success{background:#059669;color:#fff}
+    .toast.error{background:#dc2626;color:#fff}
+    @media(max-width:680px){
+      .layout{flex-direction:column}
+      .sidebar{width:100%}
+      .step-list{display:flex;gap:6px;overflow-x:auto}
+      .step-item{flex-shrink:0}
+      .row-2{grid-template-columns:1fr}
+      .welcome-card{padding:32px 22px}
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-logo">SafeHeight</a>
+    <span class="nav-title">Student Portal</span>
+    <div class="nav-right">
+      <span class="nav-email" id="nav-email"></span>
+      <button type="button" class="nav-logout" onclick="logout()">Sign Out</button>
+    </div>
+  </nav>
+
+  <!-- Welcome screen -->
+  <div class="welcome-screen" id="welcome-screen">
+    <div class="welcome-card">
+      <div class="welcome-badge">SafeHeight Certification</div>
+      <h1 class="welcome-heading">Welcome, <span class="welcome-name" id="welcome-name">...</span></h1>
+      <p class="welcome-sub" style="font-size:0.95rem;color:#1a2744;font-weight:600">to your Working at Height Certification Portal.</p>
+      <p class="welcome-sub" style="margin-top:-16px">Please complete the following steps to submit your details for instructor review. Your certificate will be issued after approval.</p>
+      <div class="welcome-steps">
+        <div class="welcome-step">
+          <div class="ws-num">1</div>
+          <div class="ws-text">
+            <strong>Personal Details</strong>
+            <span>Full name (EN &amp; HE), Government ID, Employer</span>
+          </div>
+        </div>
+        <div class="welcome-step">
+          <div class="ws-num">2</div>
+          <div class="ws-text">
+            <strong>Documents &amp; Photo</strong>
+            <span>Photo ID (JPG/PNG/PDF, max 5 MB), optional profile photo</span>
+          </div>
+        </div>
+        <div class="welcome-step">
+          <div class="ws-num">3</div>
+          <div class="ws-text">
+            <strong>Health &amp; Safety Declaration</strong>
+            <span>Read, confirm, and sign the safety declaration</span>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn-primary btn-gold" onclick="startPortal()" style="width:100%;padding:14px">Begin Registration →</button>
+    </div>
+  </div>
+
+  <!-- Portal layout (hidden until Begin is clicked) -->
+  <div class="layout" id="portal-layout">
+    <aside class="sidebar">
+      <div class="progress-label">Your Progress</div>
+      <ul class="step-list">
+        <li class="step-item active" id="nav-step-1" onclick="goStep(1)">
+          <div class="step-num" id="num-1">1</div>
+          <span class="step-label">Personal Details</span>
+        </li>
+        <li class="step-item pending" id="nav-step-2" onclick="goStep(2)">
+          <div class="step-num" id="num-2">2</div>
+          <span class="step-label">Documents</span>
+        </li>
+        <li class="step-item pending" id="nav-step-3" onclick="goStep(3)">
+          <div class="step-num" id="num-3">3</div>
+          <span class="step-label">Safety Declaration</span>
+        </li>
+        <li class="step-item pending" id="nav-step-4" onclick="goStep(4)">
+          <div class="step-num" id="num-4">4</div>
+          <span class="step-label">My Certificates</span>
+        </li>
+      </ul>
+    </aside>
+
+    <main class="main">
+
+      <!-- Step 1: Personal Details -->
+      <div id="step-1" class="panel active">
+        <div class="panel-title">Personal Details</div>
+        <div class="panel-sub">Please fill in your details exactly as they appear on your official ID document.</div>
+
+        <div class="field">
+          <label for="full-name-he">Full Name in Hebrew <span class="req">*</span></label>
+          <input type="text" id="full-name-he" placeholder="שם מלא בעברית" dir="rtl" autocomplete="name" />
+          <div class="field-hint">As it appears on your Israeli ID card (תעודת זהות)</div>
+        </div>
+
+        <div class="field">
+          <label for="full-name">Full Name in English <span class="req">*</span></label>
+          <input type="text" id="full-name" placeholder="e.g. Jane Doe" autocomplete="name" />
+          <div class="field-hint">As it appears on your passport or official document</div>
+        </div>
+
+        <div class="field">
+          <label for="national-id">Government ID / Passport Number <span class="req">*</span></label>
+          <input type="text" id="national-id" placeholder="e.g. 123456789 or AB1234567" autocomplete="off" oninput="validateID()" />
+          <div class="field-hint" id="id-hint">Israeli ID: 9 digits &nbsp;|&nbsp; Passport: 2–3 letters + 6–7 digits</div>
+          <div class="field-error" id="id-error">Please enter a valid Israeli ID (9 digits) or passport number (letters followed by digits).</div>
+          <div class="field-hint" style="color:#94a3b8;font-style:italic;margin-top:4px">Stored securely and never displayed publicly.</div>
+        </div>
+
+        <div class="field">
+          <label for="employer">Employer / Company Name <span class="req">*</span></label>
+          <input type="text" id="employer" placeholder="e.g. ACME Construction Ltd." autocomplete="organization" />
+        </div>
+
+        <button type="button" class="btn-primary" onclick="saveProfile()">Save &amp; Continue →</button>
+      </div>
+
+      <!-- Step 2: Documents -->
+      <div id="step-2" class="panel">
+        <div class="panel-title">Documents &amp; Photo</div>
+        <div class="panel-sub">Upload your ID document and, optionally, a profile photo for your certificate.</div>
+
+        <div class="upload-section">
+          <span class="upload-label">Photo ID <span style="color:#dc2626">*</span></span>
+          <div class="upload-zone" id="photo-zone">
+            <input type="file" id="photo-file" accept="image/jpeg,image/png,image/webp,application/pdf" onchange="onPhotoSelect()" />
+            <div class="upload-icon" id="photo-icon">📄</div>
+            <p>Click or drag to upload your ID card or passport</p>
+            <p style="font-size:0.72rem;margin-top:4px">JPEG, PNG, WebP or PDF &nbsp;·&nbsp; Max 5 MB</p>
+            <div class="filename" id="photo-filename"></div>
+          </div>
+          <div style="font-size:0.75rem;color:#94a3b8">This document will only be viewed by your assigned instructor.</div>
+        </div>
+
+        <div class="upload-section">
+          <span class="upload-label">Profile Photo (Selfie) <span style="color:#94a3b8;font-weight:400;font-size:0.75rem">— Optional</span></span>
+          <div class="upload-zone" id="selfie-zone">
+            <input type="file" id="selfie-file" accept="image/jpeg,image/png,image/webp" onchange="onSelfieSelect()" />
+            <div class="upload-icon" id="selfie-icon">🤳</div>
+            <p>Click or drag to upload a clear photo of yourself</p>
+            <p style="font-size:0.72rem;margin-top:4px">JPEG, PNG or WebP &nbsp;·&nbsp; Max 10 MB</p>
+            <div class="filename" id="selfie-filename"></div>
+          </div>
+          <div style="font-size:0.75rem;color:#94a3b8">This may appear on your printed certificate.</div>
+        </div>
+
+        <div style="display:flex;gap:12px">
+          <button type="button" class="btn-sm" onclick="goStep(1)">← Back</button>
+          <button type="button" class="btn-primary" onclick="uploadDocuments()">Upload &amp; Continue →</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Health & Safety Declaration -->
+      <div id="step-3" class="panel">
+        <div class="panel-title">Health &amp; Safety Declaration</div>
+        <div class="panel-sub">Please read the full declaration, confirm your agreement, and sign below.</div>
+
+        <div class="declaration-box">
+          <h4>Working at Height — Health &amp; Safety Declaration</h4>
+          <p>I, the undersigned, hereby declare and confirm the following:</p>
+          <ul>
+            <li>I have attended and actively participated in the Working at Height safety training course as required under the <strong>Work Safety Regulations (Working at Height), 5766-2007</strong>.</li>
+            <li>I have been fully briefed on the potential hazards and risks associated with working at height, including fall risks, equipment failure, and environmental hazards.</li>
+            <li>I understand my obligations under the <strong>Work Safety Ordinance [New Version], 5730-1970</strong>, and the applicable Israeli safety regulations.</li>
+            <li>I am in good health and am not aware of any physical or medical condition that would prevent me from safely performing work at height.</li>
+            <li>I have been trained in the correct use, inspection, and maintenance of personal protective equipment (PPE), including harnesses, lanyards, and anchor points.</li>
+            <li>I understand the emergency procedures to follow in the event of a fall or accident at height, including rescue protocols.</li>
+            <li>I commit to conducting a risk assessment prior to any work at height activity and to never working at height alone when conditions present an unacceptable risk.</li>
+            <li>I agree to immediately report any unsafe conditions, equipment defects, or near-miss incidents to my supervisor or site safety officer.</li>
+            <li>I understand that this certificate is valid for <strong>two (2) years</strong> from the date of issue and that I am responsible for renewing it before expiry.</li>
+            <li>I acknowledge that this declaration forms part of my safety record and may be inspected by regulatory authorities or my employer.</li>
+          </ul>
+          <p style="margin-top:12px">I confirm that all information I have provided is accurate and complete. I understand that providing false information may result in the revocation of my certificate.</p>
+        </div>
+
+        <label class="checkbox-row" id="decl-checkbox-row">
+          <input type="checkbox" id="decl-checkbox" />
+          <span>I have read, understood, and agree to the Working at Height Health &amp; Safety Declaration above. I confirm that I am fit and competent to perform work at height and will comply with all applicable safety regulations.</span>
+        </label>
+
+        <div class="sig-label">Your Signature <span style="color:#dc2626">*</span></div>
+        <canvas id="sig-canvas" width="580" height="160"></canvas>
+        <div class="sig-actions">
+          <button type="button" class="btn-sm" onclick="clearSig()">Clear Signature</button>
+          <button type="button" class="btn-sm" onclick="goStep(2)">← Back</button>
+          <button type="button" class="btn-primary btn-gold" onclick="saveSignature()">Submit Declaration →</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Certificates -->
+      <div id="step-4" class="panel">
+        <div class="panel-title">My Certificates</div>
+        <div class="panel-sub">Your Working at Height certificates. Download and keep a copy for your records.</div>
+        <div id="status-banner"></div>
+        <div id="certs-container">
+          <p style="color:#94a3b8;font-size:0.85rem">Loading...</p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    let currentStep = 1;
+    let studentData = null;
+
+    function toast(msg, type = 'success') {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.className = 'toast ' + type;
+      el.style.display = 'block';
+      setTimeout(() => { el.style.display = 'none'; }, 3500);
+    }
+
+    function startPortal() {
+      document.getElementById('welcome-screen').style.display = 'none';
+      document.getElementById('portal-layout').classList.add('visible');
+    }
+
+    function goStep(n) {
+      currentStep = n;
+      for (let i = 1; i <= 4; i++) {
+        const navEl = document.getElementById('nav-step-' + i);
+        const panelEl = document.getElementById('step-' + i);
+        navEl.classList.remove('active');
+        panelEl.classList.remove('active');
+        if (i === n) {
+          navEl.classList.add('active');
+          panelEl.classList.add('active');
+        }
+      }
+      if (n === 4) loadCerts();
+    }
+
+    function markDone(stepNum) {
+      const navEl = document.getElementById('nav-step-' + stepNum);
+      navEl.classList.remove('pending', 'active');
+      navEl.classList.add('done');
+      const numEl = document.getElementById('num-' + stepNum);
+      numEl.textContent = '';
+    }
+
+    // Government ID validation
+    // Israeli ID: exactly 9 digits
+    // Passport: 2-3 uppercase letters followed by 6-8 digits (e.g. AB1234567, USA12345678)
+    const ID_PATTERNS = [
+      /^\d{9}$/,
+      /^[A-Za-z]{1,3}\d{6,8}$/,
+    ];
+
+    function validateID() {
+      const val = document.getElementById('national-id').value.trim();
+      const input = document.getElementById('national-id');
+      const errEl = document.getElementById('id-error');
+      if (!val) {
+        input.classList.remove('invalid');
+        errEl.style.display = 'none';
+        return true;
+      }
+      const valid = ID_PATTERNS.some(p => p.test(val));
+      if (!valid) {
+        input.classList.add('invalid');
+        errEl.style.display = 'block';
+      } else {
+        input.classList.remove('invalid');
+        errEl.style.display = 'none';
+      }
+      return valid;
+    }
+
+    async function saveProfile() {
+      const full_name_he = document.getElementById('full-name-he').value.trim();
+      const full_name = document.getElementById('full-name').value.trim();
+      const national_id = document.getElementById('national-id').value.trim();
+      const employer = document.getElementById('employer').value.trim();
+
+      if (!full_name_he) return toast('Please enter your full name in Hebrew.', 'error');
+      if (!full_name) return toast('Please enter your full name in English.', 'error');
+      if (!national_id) return toast('Please enter your Government ID or Passport number.', 'error');
+      if (!validateID()) return toast('Please enter a valid ID / Passport number.', 'error');
+      if (!employer) return toast('Please enter your employer / company name.', 'error');
+
+      const [r1, r2] = await Promise.all([
+        fetch('/student/api/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ full_name, full_name_he, employer }),
+        }),
+        fetch('/student/api/national-id', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ national_id }),
+        }),
+      ]);
+
+      if (r1.ok && r2.ok) {
+        toast('Personal details saved!');
+        markDone(1);
+        goStep(2);
+      } else {
+        toast('Failed to save details. Please try again.', 'error');
+      }
+    }
+
+    function onPhotoSelect() {
+      const f = document.getElementById('photo-file').files[0];
+      if (!f) return;
+      document.getElementById('photo-filename').textContent = f.name;
+      document.getElementById('photo-zone').classList.add('uploaded');
+    }
+
+    function onSelfieSelect() {
+      const f = document.getElementById('selfie-file').files[0];
+      if (!f) return;
+      document.getElementById('selfie-filename').textContent = f.name;
+      document.getElementById('selfie-zone').classList.add('uploaded');
+    }
+
+    async function uploadDocuments() {
+      const photoFile = document.getElementById('photo-file').files[0];
+      if (!photoFile) return toast('Please upload your Photo ID to continue.', 'error');
+
+      const selfieFile = document.getElementById('selfie-file').files[0];
+
+      // Upload photo ID
+      const fd1 = new FormData();
+      fd1.append('file', photoFile);
+      const r1 = await fetch('/student/api/photo-id', { method: 'POST', body: fd1 });
+      if (!r1.ok) {
+        const d = await r1.json();
+        return toast(d.detail || 'Photo ID upload failed.', 'error');
+      }
+
+      // Upload selfie if provided
+      if (selfieFile) {
+        const fd2 = new FormData();
+        fd2.append('file', selfieFile);
+        const r2 = await fetch('/student/api/selfie', { method: 'POST', body: fd2 });
+        if (!r2.ok) {
+          const d = await r2.json();
+          return toast(d.detail || 'Selfie upload failed.', 'error');
+        }
+      }
+
+      toast('Documents uploaded successfully!');
+      markDone(2);
+      goStep(3);
+    }
+
+    // Signature canvas
+    const canvas = document.getElementById('sig-canvas');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+    ctx.strokeStyle = '#1a2744';
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    function getPos(e) {
+      const r = canvas.getBoundingClientRect();
+      const src = e.touches ? e.touches[0] : e;
+      return {
+        x: (src.clientX - r.left) * (canvas.width / r.width),
+        y: (src.clientY - r.top) * (canvas.height / r.height),
+      };
+    }
+
+    canvas.addEventListener('mousedown', e => {
+      drawing = true;
+      const p = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+    });
+    canvas.addEventListener('mousemove', e => {
+      if (!drawing) return;
+      const p = getPos(e);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+    });
+    canvas.addEventListener('mouseup', () => { drawing = false; });
+    canvas.addEventListener('mouseleave', () => { drawing = false; });
+    canvas.addEventListener('touchstart', e => {
+      e.preventDefault();
+      drawing = true;
+      const p = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+    });
+    canvas.addEventListener('touchmove', e => {
+      e.preventDefault();
+      if (!drawing) return;
+      const p = getPos(e);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+    });
+    canvas.addEventListener('touchend', () => { drawing = false; });
+
+    function clearSig() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    async function saveSignature() {
+      const checked = document.getElementById('decl-checkbox').checked;
+      if (!checked) return toast('Please confirm the safety declaration by checking the box.', 'error');
+
+      const blank = !ctx.getImageData(0, 0, canvas.width, canvas.height).data.some(v => v !== 0);
+      if (blank) return toast('Please sign the declaration before submitting.', 'error');
+
+      const data_url = canvas.toDataURL('image/png');
+      const res = await fetch('/student/api/signature', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data_url }),
+      });
+
+      if (res.ok) {
+        toast('Declaration submitted! Your instructor will review your details.');
+        markDone(3);
+        goStep(4);
+      } else {
+        toast('Failed to save signature. Please try again.', 'error');
+      }
+    }
+
+    async function loadCerts() {
+      const container = document.getElementById('certs-container');
+      const banner = document.getElementById('status-banner');
+      container.innerHTML = '<p style="color:#94a3b8;font-size:0.85rem">Loading...</p>';
+
+      const [meRes, certsRes] = await Promise.all([
+        fetch('/student/api/me'),
+        fetch('/student/api/certificates'),
+      ]);
+
+      const me = await meRes.json();
+      const certs = certsRes.ok ? await certsRes.json() : [];
+
+      // Status banner
+      if (me.status === 'pending') {
+        banner.innerHTML = `<div class="status-card status-pending">⏳ Your profile is under review. Your instructor will issue your certificate shortly.</div>`;
+      } else if (me.status === 'approved') {
+        banner.innerHTML = `<div class="status-card status-approved">✓ Approved — your certificate has been issued.</div>`;
+      } else if (me.status === 'rejected') {
+        banner.innerHTML = `<div class="status-card status-rejected">✗ Your submission was not approved. Please contact your instructor for details.</div>`;
+      } else {
+        banner.innerHTML = '';
+      }
+
+      if (!certs.length) {
+        container.innerHTML = `
+          <div style="text-align:center;padding:40px 0;color:#94a3b8">
+            <div style="font-size:2.5rem;margin-bottom:16px">🕐</div>
+            <p style="font-size:0.9rem;max-width:340px;margin:0 auto">No certificates yet. Once your instructor approves your submission, your certificate will appear here.</p>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = certs.map(c => `
+        <div class="cert-item">
+          <div style="flex:1">
+            <div class="cert-serial">${c.serial}</div>
+            <div class="cert-meta">Issued: ${c.date_issue} &nbsp;·&nbsp; Expires: ${c.date_expiry}</div>
+            <div class="cert-scopes">${(c.scopes || []).map(s => `<span class="cert-scope-tag">${s}</span>`).join('')}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;flex-shrink:0">
+            <span class="cert-badge badge-${c.status}">${c.status}</span>
+            ${c.status === 'active' ? `<a class="btn-download" href="/student/certificate/${c.id}/download" target="_blank">Download PDF</a>` : ''}
+          </div>
+        </div>`).join('');
+    }
+
+    async function logout() {
+      await fetch('/student/logout', { method: 'POST' });
+      window.location.href = '/student/login';
+    }
+
+    // Init: load student data and decide which screen to show
+    (async () => {
+      const res = await fetch('/student/api/me');
+      if (!res.ok) {
+        window.location.href = '/student/login';
+        return;
+      }
+      studentData = await res.json();
+      document.getElementById('nav-email').textContent = studentData.email;
+
+      const nameDisplay = studentData.full_name || studentData.email.split('@')[0];
+      document.getElementById('welcome-name').textContent = nameDisplay;
+
+      // If already approved/has certs, skip welcome and go straight to certs
+      if (studentData.status === 'approved') {
+        document.getElementById('welcome-screen').style.display = 'none';
+        document.getElementById('portal-layout').classList.add('visible');
+        // Mark completed steps
+        if (studentData.full_name) markDone(1);
+        if (studentData.has_photo) markDone(2);
+        if (studentData.has_signature) markDone(3);
+        goStep(4);
+        return;
+      }
+
+      // If pending, show portal with progress restored
+      if (studentData.status === 'pending') {
+        document.getElementById('welcome-screen').style.display = 'none';
+        document.getElementById('portal-layout').classList.add('visible');
+        if (studentData.full_name) {
+          document.getElementById('full-name').value = studentData.full_name;
+          document.getElementById('full-name-he').value = studentData.full_name_he || '';
+          document.getElementById('employer').value = studentData.employer || '';
+          markDone(1);
+        }
+        if (studentData.has_photo) markDone(2);
+        if (studentData.has_signature) markDone(3);
+        goStep(4);
+        return;
+      }
+
+      // Pre-fill form if data exists
+      if (studentData.full_name) {
+        document.getElementById('full-name').value = studentData.full_name;
+        document.getElementById('full-name-he').value = studentData.full_name_he || '';
+        document.getElementById('employer').value = studentData.employer || '';
+      }
+    })();
+  </script>
+</body>
+</html>

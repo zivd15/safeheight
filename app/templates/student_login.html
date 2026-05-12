@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="robots" content="noindex" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Login — SafeHeight</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f172a;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+    .back{position:fixed;top:20px;left:24px;color:#94a3b8;font-size:0.82rem;text-decoration:none;display:flex;align-items:center;gap:4px}
+    .back:hover{color:#c9a84c}
+    .card{background:#1e293b;border:1px solid #2d3f55;border-radius:16px;width:100%;max-width:420px;overflow:hidden}
+    .card-top{background:#0f172a;padding:28px 32px 22px;text-align:center;border-bottom:1px solid #2d3f55}
+    .logo{color:#c9a84c;font-size:1.1rem;font-weight:800;margin-bottom:6px}
+    .card-top h1{color:#fff;font-size:1.2rem;font-weight:700}
+    .card-top p{color:#94a3b8;font-size:0.8rem;margin-top:4px}
+    .card-body{padding:28px 32px}
+    .tabs{display:flex;gap:0;margin-bottom:24px;border:1px solid #334155;border-radius:8px;overflow:hidden}
+    .tab{flex:1;padding:9px;text-align:center;font-size:0.85rem;font-weight:600;cursor:pointer;color:#94a3b8;background:transparent;border:none;transition:all 0.2s}
+    .tab.active{background:#c9a84c;color:#0f172a}
+    .panel{display:none}
+    .panel.active{display:block}
+    label{display:block;font-size:0.78rem;font-weight:600;color:#94a3b8;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em}
+    input{width:100%;padding:10px 13px;background:#0f172a;border:1.5px solid #334155;border-radius:8px;color:#e2e8f0;font-size:0.9rem;outline:none;transition:border-color 0.2s;margin-bottom:14px}
+    input:focus{border-color:#c9a84c}
+    .btn{width:100%;padding:12px;background:#c9a84c;color:#0f172a;border:none;border-radius:8px;font-weight:700;font-size:0.95rem;cursor:pointer;transition:background 0.2s;margin-top:4px}
+    .btn:hover{background:#b8973d}
+    .btn:disabled{opacity:0.5;cursor:not-allowed}
+    .msg{margin-top:14px;padding:11px 14px;border-radius:8px;font-size:0.83rem;display:none}
+    .msg.success{background:rgba(5,150,105,0.15);color:#34d399;border:1px solid rgba(5,150,105,0.3)}
+    .msg.error{background:rgba(220,38,38,0.15);color:#f87171;border:1px solid rgba(220,38,38,0.3)}
+    .otp-step2{display:none;margin-top:6px}
+    .divider{text-align:center;color:#475569;font-size:0.75rem;margin:6px 0 14px}
+  </style>
+</head>
+<body>
+  <a href="/" class="back">← Home</a>
+  <div class="card">
+    <div class="card-top">
+      <div class="logo">SafeHeight</div>
+      <h1>Student Portal</h1>
+      <p>Access your training profile and certificates</p>
+    </div>
+    <div class="card-body">
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('magic')">Magic Link</button>
+        <button class="tab" onclick="switchTab('otp')">OTP Code</button>
+      </div>
+
+      <!-- Magic Link -->
+      <div id="panel-magic" class="panel active">
+        <label for="magic-email">Your Email Address</label>
+        <input type="email" id="magic-email" placeholder="student@example.com" title="Registered email address" />
+        <button class="btn" onclick="sendMagic()">Send Magic Link</button>
+        <div id="magic-msg" class="msg"></div>
+      </div>
+
+      <!-- OTP -->
+      <div id="panel-otp" class="panel">
+        <label for="otp-email">Your Email Address</label>
+        <input type="email" id="otp-email" placeholder="student@example.com" title="Registered email address" />
+        <button class="btn" id="otp-send-btn" onclick="sendOTP()">Send Code</button>
+        <div class="otp-step2" id="otp-step2">
+          <div class="divider">— Enter the 6-digit code from your email —</div>
+          <label for="otp-code">Verification Code</label>
+          <input type="text" id="otp-code" placeholder="123456" maxlength="6" title="6-digit verification code" />
+          <button class="btn" onclick="verifyOTP()">Verify &amp; Enter</button>
+        </div>
+        <div id="otp-msg" class="msg"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='magic')||(i===1&&tab==='otp')));
+      document.getElementById('panel-magic').classList.toggle('active', tab==='magic');
+      document.getElementById('panel-otp').classList.toggle('active', tab==='otp');
+    }
+
+    function showMsg(id, text, type) {
+      const el = document.getElementById(id);
+      el.textContent = text; el.className = 'msg ' + type; el.style.display = 'block';
+    }
+
+    async function sendMagic() {
+      const email = document.getElementById('magic-email').value.trim();
+      if (!email) return showMsg('magic-msg', 'Please enter your email.', 'error');
+      const res = await fetch('/student/auth/magic-link', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+      const d = await res.json();
+      showMsg('magic-msg', d.message || 'Link sent.', res.ok ? 'success' : 'error');
+    }
+
+    async function sendOTP() {
+      const email = document.getElementById('otp-email').value.trim();
+      if (!email) return showMsg('otp-msg', 'Please enter your email.', 'error');
+      const res = await fetch('/student/auth/otp/request', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+      const d = await res.json();
+      if (res.ok) {
+        document.getElementById('otp-step2').style.display = 'block';
+        document.getElementById('otp-send-btn').disabled = true;
+        showMsg('otp-msg', d.message || 'Code sent.', 'success');
+      } else {
+        showMsg('otp-msg', d.detail || 'Error.', 'error');
+      }
+    }
+
+    async function verifyOTP() {
+      const email = document.getElementById('otp-email').value.trim();
+      const code  = document.getElementById('otp-code').value.trim();
+      if (!code) return showMsg('otp-msg', 'Please enter the code.', 'error');
+      const res = await fetch('/student/auth/otp/verify', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email, code})});
+      const d = await res.json();
+      if (res.ok && d.redirect) {
+        window.location.href = d.redirect;
+      } else {
+        showMsg('otp-msg', d.detail || 'Invalid code.', 'error');
+      }
+    }
+  </script>
+</body>
+</html>

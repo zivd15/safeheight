@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="robots" content="noindex" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings — SafeHeight Instructor</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;min-height:100vh}
+    nav{background:#0f172a;padding:0 32px;display:flex;align-items:center;height:58px;gap:16px;border-bottom:1px solid #1e293b}
+    .nav-logo{color:#f59e0b;font-weight:800;font-size:1rem;text-decoration:none;letter-spacing:0.03em}
+    .nav-links{display:flex;gap:2px;margin-left:24px}
+    .nav-link{color:#94a3b8;font-size:0.82rem;padding:6px 12px;border-radius:6px;text-decoration:none;transition:all 0.2s}
+    .nav-link:hover{color:#e2e8f0;background:rgba(255,255,255,0.06)}
+    .nav-link.active{color:#fff;background:#2563eb}
+    .nav-right{margin-left:auto}
+    .nav-logout{color:#94a3b8;font-size:0.8rem;background:none;border:none;cursor:pointer;padding:6px 10px;border-radius:6px;transition:all 0.2s}
+    .nav-logout:hover{color:#f87171;background:rgba(248,113,113,0.08)}
+    .page{max-width:640px;margin:36px auto;padding:0 24px}
+    .page-header{margin-bottom:24px}
+    .page-header h1{font-size:1.5rem;font-weight:800;color:#0f172a}
+    .page-header p{color:#64748b;font-size:0.85rem;margin-top:5px}
+    .card{background:white;border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,0.05),0 4px 16px rgba(0,0,0,0.04);border:1px solid #e2e8f0;padding:28px;margin-bottom:20px}
+    .card-title{font-size:0.78rem;font-weight:700;color:#0f172a;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:8px}
+    .card-title::before{content:'';display:inline-block;width:3px;height:13px;background:#2563eb;border-radius:2px;flex-shrink:0}
+    label{display:block;font-size:0.78rem;font-weight:600;color:#374151;margin-bottom:5px}
+    input{width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;transition:border-color 0.2s,box-shadow 0.2s;background:#fff;color:#1e293b;margin-bottom:16px}
+    input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
+    .field-note{font-size:0.75rem;color:#94a3b8;margin-top:-10px;margin-bottom:16px}
+    .sig-note{font-size:0.82rem;color:#64748b;margin-bottom:14px;line-height:1.6}
+    .upload-zone{border:2px dashed #e2e8f0;border-radius:10px;padding:24px;text-align:center;cursor:pointer;position:relative;transition:border-color 0.2s,background 0.2s;margin-bottom:16px;background:#fafafa}
+    .upload-zone:hover{border-color:#2563eb;background:#eff6ff}
+    .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;margin:0;padding:0;border:none}
+    .upload-zone p{font-size:0.82rem;color:#94a3b8}
+    .sig-preview{max-width:200px;max-height:80px;margin:10px auto 0;display:none;border-radius:6px}
+    .btn-primary{padding:11px 28px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-weight:600;font-size:0.9rem;cursor:pointer;transition:background 0.2s}
+    .btn-primary:hover{background:#1d4ed8}
+    .toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:10px;font-size:0.85rem;font-weight:600;display:none;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,0.15)}
+    .toast.success{background:#10b981;color:#fff}
+    .toast.error{background:#ef4444;color:#fff}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-logo">SafeHeight</a>
+    <div class="nav-links">
+      <a href="/instructor/dashboard" class="nav-link">Dashboard</a>
+      <a href="/instructor/queue" class="nav-link">Review Queue</a>
+      <a href="/instructor/database" class="nav-link">Certificates</a>
+      <a href="/instructor/settings" class="nav-link active">Settings</a>
+    </div>
+    <div class="nav-right"><button type="button" class="nav-logout" onclick="logout()">Sign Out</button></div>
+  </nav>
+
+  <div class="page">
+    <div class="page-header"><h1>Instructor Settings</h1><p>Your name and license number appear on every issued certificate.</p></div>
+
+    <div class="card">
+      <div class="card-title">Instructor Credentials</div>
+      <label for="full-name">Full Name (English)</label>
+      <input type="text" id="full-name" placeholder="Your full name in English" title="Instructor full name in English" />
+      <label for="full-name-he">Full Name (Hebrew)</label>
+      <input type="text" id="full-name-he" placeholder="שם מלא בעברית" dir="rtl" title="Instructor full name in Hebrew" />
+      <p class="field-note">Both names may appear on issued certificates.</p>
+      <label for="license-no">License / Certification Number</label>
+      <input type="text" id="license-no" placeholder="CERT-XXXX-XXXX" title="License number" />
+      <button type="button" class="btn-primary" onclick="saveSettings()">Save Changes</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Digital Signature</div>
+      <p class="sig-note">Upload a transparent PNG of your signature. It will be placed on all issued certificates.</p>
+      <div class="upload-zone">
+        <input type="file" id="sig-file" accept="image/png" onchange="onSigSelect()" />
+        <p>✍️ Click to upload signature PNG</p>
+        <p style="font-size:0.72rem;margin-top:4px;color:#cbd5e1">Transparent PNG recommended · Max 10 MB</p>
+      </div>
+      <img id="sig-preview" class="sig-preview" alt="Signature preview" />
+      <button type="button" class="btn-primary" onclick="uploadSig()" style="margin-top:8px">Upload Signature</button>
+    </div>
+  </div>
+  <div id="toast" class="toast"></div>
+
+  <script>
+    function toast(msg, type='success') {
+      const el = document.getElementById('toast');
+      el.textContent=msg; el.className='toast '+type; el.style.display='block';
+      setTimeout(()=>el.style.display='none',3000);
+    }
+    (async()=>{
+      const res = await fetch('/instructor/api/me');
+      if(!res.ok){window.location.href='/instructor/login';return;}
+      const d = await res.json();
+      document.getElementById('full-name').value = d.full_name||'';
+      document.getElementById('full-name-he').value = d.full_name_he||'';
+      document.getElementById('license-no').value = d.license_no||'';
+    })();
+    async function saveSettings(){
+      const full_name=document.getElementById('full-name').value.trim();
+      const full_name_he=document.getElementById('full-name-he').value.trim();
+      const license_no=document.getElementById('license-no').value.trim();
+      const res=await fetch('/instructor/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({full_name,full_name_he,license_no})});
+      const d=await res.json();
+      toast(d.message||d.detail, res.ok?'success':'error');
+    }
+    function onSigSelect(){
+      const f=document.getElementById('sig-file').files[0];
+      if(!f)return;
+      const prev=document.getElementById('sig-preview');
+      prev.src=URL.createObjectURL(f); prev.style.display='block';
+    }
+    async function uploadSig(){
+      const file=document.getElementById('sig-file').files[0];
+      if(!file)return toast('Please select a PNG file.','error');
+      const fd=new FormData(); fd.append('file',file);
+      const res=await fetch('/instructor/api/settings/signature',{method:'POST',body:fd});
+      const d=await res.json();
+      toast(d.message||d.detail, res.ok?'success':'error');
+    }
+    async function logout(){await fetch('/instructor/logout',{method:'POST'});window.location.href='/instructor/login';}
+  </script>
+</body>
+</html>

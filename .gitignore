@@ -1,0 +1,10 @@
+.env
+*.db
+*.db-journal
+uploads/
+certificates/
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/

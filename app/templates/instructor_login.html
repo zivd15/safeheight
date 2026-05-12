@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="robots" content="noindex" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instructor Login — SafeHeight</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f172a;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+    .back{position:fixed;top:20px;left:24px;color:#64748b;font-size:0.82rem;text-decoration:none;display:flex;align-items:center;gap:5px;transition:color 0.2s}
+    .back:hover{color:#f59e0b}
+    .card{background:#1e293b;border:1px solid #1e3a5f;border-radius:16px;width:100%;max-width:400px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.4)}
+    .card-top{background:#0f172a;padding:28px 32px 22px;text-align:center;border-bottom:1px solid #1e3a5f}
+    .logo{color:#f59e0b;font-size:1.15rem;font-weight:800;letter-spacing:0.04em;margin-bottom:8px}
+    .card-top h1{color:#f1f5f9;font-size:1.2rem;font-weight:700}
+    .card-top p{color:#64748b;font-size:0.8rem;margin-top:4px}
+    .card-body{padding:28px 32px}
+    .mfa-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.3);color:#60a5fa;font-size:0.72rem;font-weight:700;letter-spacing:0.08em;padding:4px 12px;border-radius:20px;margin-bottom:20px;text-transform:uppercase}
+    label{display:block;font-size:0.75rem;font-weight:600;color:#94a3b8;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.07em}
+    input{width:100%;padding:10px 14px;background:#0f172a;border:1.5px solid #1e3a5f;border-radius:8px;color:#e2e8f0;font-size:0.9rem;outline:none;transition:border-color 0.2s,box-shadow 0.2s;margin-bottom:14px}
+    input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,0.15)}
+    .mfa-section{display:none;border-top:1px solid #1e3a5f;padding-top:16px;margin-top:4px}
+    .mfa-section.visible{display:block}
+    .mfa-hint{font-size:0.78rem;color:#64748b;margin-bottom:12px}
+    .btn{width:100%;padding:12px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-weight:700;font-size:0.95rem;cursor:pointer;transition:background 0.2s;margin-top:4px}
+    .btn:hover{background:#1d4ed8}
+    .err{margin-top:14px;padding:11px 14px;border-radius:8px;font-size:0.83rem;background:rgba(220,38,38,0.12);color:#f87171;border:1px solid rgba(220,38,38,0.25);display:none}
+    .setup-link{text-align:center;margin-top:18px;font-size:0.78rem;color:#475569}
+    .setup-link a{color:#64748b;text-decoration:none;transition:color 0.2s}
+    .setup-link a:hover{color:#f59e0b}
+    .gold-line{height:3px;background:linear-gradient(90deg,#2563eb,#f59e0b);border-radius:0 0 3px 3px}
+  </style>
+</head>
+<body>
+  <a href="/" class="back">← Home</a>
+  <div class="card">
+    <div class="gold-line"></div>
+    <div class="card-top">
+      <div class="logo">SafeHeight</div>
+      <h1>Instructor Portal</h1>
+      <p>Admin access — secure login required</p>
+    </div>
+    <div class="card-body">
+      <div class="mfa-badge">🔒 MFA Protected</div>
+      <label for="l-email">Email Address</label>
+      <input type="email" id="l-email" placeholder="instructor@example.com" title="Instructor email" />
+      <label for="l-pass">Password</label>
+      <input type="password" id="l-pass" placeholder="••••••••" title="Password" onkeydown="if(event.key==='Enter')login()" />
+      <div class="mfa-section" id="mfa-section">
+        <div class="mfa-hint">Enter the 6-digit code from your authenticator app.</div>
+        <label for="l-totp">Authenticator Code</label>
+        <input type="text" id="l-totp" placeholder="123456" maxlength="6" title="TOTP code" onkeydown="if(event.key==='Enter')login()" />
+      </div>
+      <button class="btn" onclick="login()">Sign In</button>
+      <div class="err" id="err-msg"></div>
+      <div class="setup-link"><a href="/instructor/setup">First time? Set up your account →</a></div>
+    </div>
+  </div>
+
+  <script>
+    async function login() {
+      const email = document.getElementById('l-email').value.trim();
+      const password = document.getElementById('l-pass').value;
+      const totp_code = document.getElementById('l-totp').value.trim();
+      const errEl = document.getElementById('err-msg');
+      errEl.style.display = 'none';
+
+      const res = await fetch('/instructor/auth/login', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({email, password, totp_code}),
+      });
+      const d = await res.json();
+      if (res.ok && d.redirect) {
+        window.location.href = d.redirect;
+      } else if (res.status === 401 && d.detail && d.detail.includes('MFA')) {
+        document.getElementById('mfa-section').classList.add('visible');
+        errEl.textContent = 'Please enter your authenticator code.';
+        errEl.style.display = 'block';
+      } else {
+        errEl.textContent = d.detail || 'Login failed.';
+        errEl.style.display = 'block';
+      }
+    }
+  </script>
+</body>
+</html>

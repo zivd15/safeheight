@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SafeHeight — Digital Occupational Safety Certification Platform</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--navy:#0f172a;--navy2:#1a2744;--gold:#c9a84c;--gold2:#b8973d;--slate:#94a3b8;--surface:#1e293b}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--navy);color:#e2e8f0}
+
+    /* ── NAV ── */
+    nav{position:sticky;top:0;z-index:50;background:rgba(15,23,42,0.96);backdrop-filter:blur(8px);border-bottom:1px solid #1e3a5f;padding:0 48px;height:60px;display:flex;align-items:center;gap:32px}
+    .nav-brand{color:var(--gold);font-size:1.15rem;font-weight:800;letter-spacing:0.04em;white-space:nowrap}
+    .nav-brand span{color:#fff}
+    .nav-links{display:flex;gap:4px;margin-left:8px}
+    .nav-link{color:var(--slate);font-size:0.83rem;padding:6px 12px;border-radius:6px;text-decoration:none;transition:color 0.2s}
+    .nav-link:hover{color:#fff}
+    .nav-cta{margin-left:auto;display:flex;gap:10px}
+    .btn-outline{padding:8px 18px;border:1.5px solid var(--gold);border-radius:8px;color:var(--gold);background:transparent;font-size:0.83rem;font-weight:600;text-decoration:none;transition:all 0.2s}
+    .btn-outline:hover{background:var(--gold);color:var(--navy)}
+    .btn-solid{padding:8px 18px;background:var(--gold);color:var(--navy);border:none;border-radius:8px;font-size:0.83rem;font-weight:700;text-decoration:none;transition:background 0.2s}
+    .btn-solid:hover{background:var(--gold2)}
+
+    /* ── HERO ── */
+    .hero{padding:90px 48px 70px;text-align:center;background:radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,168,76,0.08) 0%, transparent 70%)}
+    .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);color:var(--gold);font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:5px 16px;border-radius:20px;margin-bottom:22px}
+    .hero h1{font-size:3rem;font-weight:800;line-height:1.1;max-width:780px;margin:0 auto 18px}
+    .hero h1 span{color:var(--gold)}
+    .hero-sub{color:var(--slate);font-size:1.05rem;max-width:600px;margin:0 auto 10px;line-height:1.7}
+    .hero-legal{color:#475569;font-size:0.8rem;margin-bottom:40px}
+    .hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .hero-btn-primary{padding:13px 32px;background:var(--gold);color:var(--navy);border:none;border-radius:10px;font-size:0.95rem;font-weight:700;text-decoration:none;transition:background 0.2s}
+    .hero-btn-primary:hover{background:var(--gold2)}
+    .hero-btn-secondary{padding:13px 32px;background:transparent;color:#e2e8f0;border:1.5px solid #334155;border-radius:10px;font-size:0.95rem;font-weight:600;text-decoration:none;transition:all 0.2s}
+    .hero-btn-secondary:hover{border-color:var(--gold);color:var(--gold)}
+
+    /* ── SECTIONS ── */
+    section{padding:72px 48px}
+    .section-eyebrow{font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+    .section-title{font-size:1.9rem;font-weight:800;margin-bottom:10px;line-height:1.2}
+    .section-sub{color:var(--slate);font-size:0.95rem;line-height:1.7;max-width:580px}
+
+    /* ── SCOPES ── */
+    .scopes-section{background:#0a1120}
+    .scopes-inner{max-width:1100px;margin:0 auto}
+    .scopes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
+    .scope-card{background:var(--surface);border:1px solid #2d3f55;border-radius:12px;padding:22px;transition:border-color 0.2s,transform 0.2s}
+    .scope-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+    .scope-num{font-size:0.7rem;font-weight:800;color:var(--gold);letter-spacing:0.1em;margin-bottom:8px}
+    .scope-name{font-size:0.95rem;font-weight:700;color:#fff;margin-bottom:6px}
+    .scope-desc{font-size:0.78rem;color:var(--slate);line-height:1.5}
+
+    /* ── FEATURES ── */
+    .features-section{background:var(--navy)}
+    .features-inner{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+    .features-list{list-style:none;margin-top:24px}
+    .features-list li{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #1e293b}
+    .features-list li:last-child{border:none}
+    .feat-icon{font-size:1.2rem;flex-shrink:0;margin-top:2px}
+    .feat-title{font-size:0.88rem;font-weight:700;color:#e2e8f0;margin-bottom:3px}
+    .feat-desc{font-size:0.78rem;color:var(--slate);line-height:1.5}
+    .compliance-card{background:var(--surface);border:1px solid #2d3f55;border-radius:14px;padding:32px}
+    .compliance-card h3{font-size:1rem;font-weight:700;color:var(--gold);margin-bottom:16px}
+    .compliance-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px}
+    .compliance-item:last-child{margin:0}
+    .compliance-item .tick{color:#34d399;font-size:1rem;flex-shrink:0;margin-top:2px}
+    .compliance-item p{font-size:0.82rem;color:var(--slate);line-height:1.5}
+    .compliance-item strong{color:#e2e8f0}
+
+    /* ── VERIFY WIDGET ── */
+    .verify-section{background:#060e1a}
+    .verify-inner{max-width:680px;margin:0 auto;text-align:center}
+    .verify-card{background:var(--surface);border:1px solid #2d3f55;border-radius:16px;padding:40px;margin-top:36px;text-align:left}
+    .verify-card h3{font-size:1rem;font-weight:700;color:#e2e8f0;margin-bottom:6px}
+    .verify-card p{font-size:0.82rem;color:var(--slate);margin-bottom:22px}
+    .verify-input-row{display:flex;gap:10px}
+    .verify-input{flex:1;padding:12px 16px;background:#0f172a;border:1.5px solid #334155;border-radius:8px;color:#e2e8f0;font-size:0.95rem;outline:none;font-family:monospace;transition:border-color 0.2s}
+    .verify-input:focus{border-color:var(--gold)}
+    .verify-btn{padding:12px 28px;background:var(--gold);color:var(--navy);border:none;border-radius:8px;font-weight:700;font-size:0.9rem;cursor:pointer;white-space:nowrap;transition:background 0.2s}
+    .verify-btn:hover{background:var(--gold2)}
+    #verify-result{margin-top:24px;display:none}
+
+    /* Result states */
+    .result-valid-banner{background:rgba(5,150,105,0.12);border:1px solid rgba(5,150,105,0.4);border-radius:12px;padding:20px 24px}
+    .result-invalid-banner{background:rgba(220,38,38,0.12);border:1px solid rgba(220,38,38,0.4);border-radius:12px;padding:20px 24px}
+    .result-banner-title{font-size:1rem;font-weight:800;letter-spacing:0.04em;display:flex;align-items:center;gap:8px;margin-bottom:14px}
+    .result-valid-banner .result-banner-title{color:#34d399}
+    .result-invalid-banner .result-banner-title{color:#f87171}
+    .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+    .result-field{padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:0.85rem}
+    .result-field:nth-last-child(-n+2){border:none}
+    .result-field .rf-label{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--slate);margin-bottom:3px}
+    .result-field .rf-value{color:#e2e8f0;font-weight:500}
+    .scopes-result{margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08)}
+    .scopes-result-title{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--slate);margin-bottom:8px}
+    .scope-tag{display:inline-block;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.25);color:var(--gold);font-size:0.72rem;font-weight:600;padding:3px 10px;border-radius:20px;margin:3px 3px 0 0}
+    .privacy-note{margin-top:12px;font-size:0.72rem;color:#475569;font-style:italic}
+
+    /* ── FOOTER ── */
+    footer{background:#060e1a;border-top:1px solid #1e293b;padding:28px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+    .footer-brand{color:var(--gold);font-weight:800;font-size:0.9rem}
+    .footer-brand span{color:#64748b}
+    .footer-note{color:#475569;font-size:0.75rem}
+
+    @media(max-width:900px){
+      .scopes-grid{grid-template-columns:1fr 1fr}
+      .features-inner{grid-template-columns:1fr}
+    }
+    @media(max-width:600px){
+      nav{padding:0 20px}.hero{padding:60px 20px 50px}.hero h1{font-size:2rem}
+      section{padding:48px 20px}.scopes-grid{grid-template-columns:1fr}
+      .verify-input-row{flex-direction:column}
+      .result-grid{grid-template-columns:1fr}
+      footer{padding:20px}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-brand">Safe<span>Height</span></div>
+    <div class="nav-links">
+      <a href="#about" class="nav-link">About Training</a>
+      <a href="#verify" class="nav-link">Verify Certificate</a>
+      <a href="#contact" class="nav-link">Contact</a>
+    </div>
+    <div class="nav-cta">
+      <a href="/student/login" class="btn-outline">Student Portal</a>
+      <a href="/instructor/login" class="btn-solid">Instructor Login</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="about">
+    <div class="hero-eyebrow">🛡️ Certified & Compliant</div>
+    <h1>Digital <span>Occupational Safety</span><br>Certification Platform</h1>
+    <p class="hero-sub">General Working at Height Modular Certifications in compliance with the <strong style="color:#e2e8f0">Safety at Work Regulations, 2007</strong>.</p>
+    <p class="hero-legal">Mandatory bi-annual (2-year) renewal &nbsp;·&nbsp; 100% Paperless Digital Workflow &nbsp;·&nbsp; Tamper-Evident SHA-256 Verification</p>
+    <div class="hero-btns">
+      <a href="#verify" class="hero-btn-primary">Verify a Certificate</a>
+      <a href="/student/login" class="hero-btn-secondary">Student Portal Login</a>
+    </div>
+  </section>
+
+  <!-- 9 MODULAR SCOPES -->
+  <section class="scopes-section">
+    <div class="scopes-inner">
+      <div class="section-eyebrow">Modular Certification Program</div>
+      <div class="section-title">9 Authorized Training Scopes</div>
+      <div class="section-sub">Each scope is individually assessed and digitally recorded. Certificates display only the scopes the student has been tested and authorized for.</div>
+      <div class="scopes-grid" id="scopes-grid">
+        <div class="scope-card"><div class="scope-num">MODULE 01</div><div class="scope-name">Ladders (Climbing &amp; Anchoring)</div><div class="scope-desc">עבודה על סולמות — טיפוס נכון, קיבוע ואבטחה בהתאם לתקנות.</div></div>
+        <div class="scope-card"><div class="scope-num">MODULE 02</div><div class="scope-name">Mobile Elevating Work Platforms (MEWP)</div><div class="scope-desc">עבודה מתוך במות הרמה; מצריך גם תעודת מפעיל מוסמך.</div></div>
+        <div class="scope-card"><div class="scope-num">MODULE 03</div><div class="scope-name">Crane Man-Baskets</div><div class="scope-desc">עבודה מתוך סלים להרמת אדם המחוברים לעגורן או מנוף.</div></div>
+        <div class="scope-card"><div class="scope-num">MODULE 04</div><div class="scope-name">Scaffolding (Access &amp; Work Only)</div><div class="scope-desc">עבודה על פיגומים נייחים, ניידים ותלויים — ללא הרכבה.</div></div>
+        <div class="scope-card"><div class="scope-num">MODULE 05</div><div class="scope-name">Flat Roofs (with Guardrails/Lifelines)</div><div class="scope-desc">עבודה על גגות שטוחים עם מעקות מגן או קווי חיים.</div></div>
+        <div class="scope-card"><div class="scope-num">MODULE 06</div><div class="scope-name">Sloped / Steep Roofs</div><div class="scope-desc">עבודה על גגות משופעים ותלולים — אמצעי אחיזה ובטיחות.</div></div>
+        <div class="scope-card"><div class="scope-num">MODULE 07</div><div class="scope-name">Fragile Roofs (Asbestos/Insulated Panels)</div><div class="scope-desc">עבודה על גגות שבירים — אסבסט ופאנל מבודד.</div></div>
+        <div class="scope-card"><div class="scope-num">MODULE 08</div><div class="scope-name">Steel Constructions &amp; Antennas</div><div class="scope-desc">עבודה על קונסטרוקציות פלדה, אנטנות ופיר צר.</div></div>
+        <div class="scope-card"><div class="scope-num">MODULE 09</div><div class="scope-name">Confined Space Access</div><div class="scope-desc">מקום מוקף — שימוש בחצובות הרמה וכננות לאבטחה.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES / COMPLIANCE -->
+  <section class="features-section">
+    <div class="features-inner">
+      <div>
+        <div class="section-eyebrow">Why SafeHeight?</div>
+        <div class="section-title">100% Paperless.<br>Legally Defensible.</div>
+        <ul class="features-list">
+          <li><div class="feat-icon">🔐</div><div><div class="feat-title">Cryptographic Verification</div><div class="feat-desc">Every certificate carries a unique SHA-256 hash. Any tampering instantly breaks verification.</div></div></li>
+          <li><div class="feat-icon">📲</div><div><div class="feat-title">Magic Link & OTP Access</div><div class="feat-desc">Students access their portal via a single-use secure link — no passwords to forget.</div></div></li>
+          <li><div class="feat-icon">✍️</div><div><div class="feat-title">Digital Health Declaration</div><div class="feat-desc">Students sign a legally binding health declaration on screen before certification is issued.</div></div></li>
+          <li><div class="feat-icon">🗄️</div><div><div class="feat-title">Instant Public Verification</div><div class="feat-desc">Safety officers can verify any certificate in seconds — from any device, no login required.</div></div></li>
+          <li><div class="feat-icon">⏰</div><div><div class="feat-title">Automatic 2-Year Renewal Alerts</div><div class="feat-desc">The system tracks expiry dates and flags renewals before they lapse.</div></div></li>
+        </ul>
+      </div>
+      <div class="compliance-card">
+        <h3>⚖️ Regulatory Compliance</h3>
+        <div class="compliance-item"><span class="tick">✓</span><p><strong>Safety at Work Regulations, 2007</strong> — Bi-annual mandatory refresher training requirement.</p></div>
+        <div class="compliance-item"><span class="tick">✓</span><p><strong>Ministry of Labor</strong> — Instructor license number printed on every certificate.</p></div>
+        <div class="compliance-item"><span class="tick">✓</span><p><strong>Data Protection</strong> — Student IDs and emails are never exposed publicly. Scoped RBAC enforced throughout.</p></div>
+        <div class="compliance-item"><span class="tick">✓</span><p><strong>Audit Trail</strong> — Full issuance log with timestamps, instructor credentials, and immutable verification hashes.</p></div>
+        <div class="compliance-item"><span class="tick">✓</span><p><strong>Photo ID Verification</strong> — Each student's government-issued ID is verified by the instructor before approval.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VERIFICATION WIDGET -->
+  <section class="verify-section" id="verify">
+    <div class="verify-inner">
+      <div class="section-eyebrow">Real-Time Certificate Validity Verification</div>
+      <div class="section-title" style="text-align:center">For Safety Officers &amp; Inspectors</div>
+      <p style="text-align:center;color:var(--slate);font-size:0.88rem;margin-top:8px">Enter a Certificate ID below to instantly verify its status, authorized scopes, and expiry date.</p>
+      <div class="verify-card">
+        <h3>Certificate Verification</h3>
+        <p>Enter the serial number printed on the certificate (e.g. GWH-2026-JD1A2B) or scan the QR code.</p>
+        <div class="verify-input-row">
+          <input type="text" class="verify-input" id="serial-input" placeholder="GWH-2026-XXXXXX" title="Certificate serial number" />
+          <button type="button" class="verify-btn" onclick="verifyCert()">Verify Status</button>
+        </div>
+        <div id="verify-result"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section style="background:var(--navy);padding:56px 48px;text-align:center" id="contact">
+    <div class="section-eyebrow">Contact</div>
+    <div class="section-title" style="font-size:1.5rem">Need to Issue Certifications?</div>
+    <p style="color:var(--slate);font-size:0.9rem;margin:12px auto 28px;max-width:480px">If you are a licensed Working at Height instructor and would like to use this platform, log in to the Instructor Portal or contact the system administrator.</p>
+    <a href="/instructor/login" class="hero-btn-primary">Instructor Portal Login →</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div><div class="footer-brand">Safe<span>Height</span></div><div class="footer-note" style="margin-top:4px">Working at Height Certification Platform</div></div>
+    <div class="footer-note">SHA-256 Tamper-Evident &nbsp;·&nbsp; Safety at Work Regulations, 2007 &nbsp;·&nbsp; All Rights Reserved</div>
+  </footer>
+
+  <script>
+    async function verifyCert() {
+      const serial = document.getElementById('serial-input').value.trim().toUpperCase();
+      const el = document.getElementById('verify-result');
+      if (!serial) return;
+      el.innerHTML = '<p style="color:var(--slate);font-size:0.85rem;margin-top:16px;text-align:center">Verifying…</p>';
+      el.style.display = 'block';
+
+      try {
+        const res = await fetch('/api/verify', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({serial}),
+        });
+        const d = await res.json();
+
+        if (res.ok && d.valid) {
+          const scopeTags = (d.scopes || []).map(s => `<span class="scope-tag">${s}</span>`).join('');
+          el.innerHTML = `
+            <div class="result-valid-banner" style="margin-top:20px">
+              <div class="result-banner-title">✅ CERTIFICATE VALID &amp; ACTIVE</div>
+              <div class="result-grid">
+                <div class="result-field"><div class="rf-label">Student Name</div><div class="rf-value">${d.student_name_masked}</div></div>
+                <div class="result-field"><div class="rf-label">Certificate Serial</div><div class="rf-value" style="font-family:monospace">${d.serial}</div></div>
+                <div class="result-field"><div class="rf-label">Date Issued</div><div class="rf-value">${d.date_issue}</div></div>
+                <div class="result-field"><div class="rf-label">Expiration Date</div><div class="rf-value">${d.date_expiry}</div></div>
+                <div class="result-field"><div class="rf-label">Lead Instructor</div><div class="rf-value">${d.instructor_name || '—'}</div></div>
+                <div class="result-field"><div class="rf-label">License Number</div><div class="rf-value">${d.instructor_license || '—'}</div></div>
+              </div>
+              ${scopeTags ? `<div class="scopes-result"><div class="scopes-result-title">Authorized Scopes</div>${scopeTags}</div>` : ''}
+              <p class="privacy-note">Student ID, email, and employer are never displayed publicly in accordance with data protection policy.</p>
+            </div>`;
+        } else {
+          const msg = d.message || d.detail || 'Certificate not found or expired.';
+          el.innerHTML = `
+            <div class="result-invalid-banner" style="margin-top:20px">
+              <div class="result-banner-title">❌ ${msg.includes('revoked') ? 'CERTIFICATE REVOKED' : 'CERTIFICATE NOT FOUND OR EXPIRED'}</div>
+              <p style="font-size:0.88rem;color:#fca5a5;line-height:1.6">${msg.includes('revoked') ? msg : 'Certificate Not Found or Expired. Please contact the certifying instructor.'}</p>
+            </div>`;
+        }
+      } catch(e) {
+        el.innerHTML = `<div class="result-invalid-banner" style="margin-top:20px"><div class="result-banner-title">❌ Error</div><p style="font-size:0.85rem;color:#fca5a5">Unable to reach verification server. Please try again.</p></div>`;
+      }
+    }
+
+    document.getElementById('serial-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') verifyCert();
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        document.querySelector(a.getAttribute('href'))?.scrollIntoView({behavior:'smooth'});
+      });
+    });
+  </script>
+</body>
+</html>
